@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!--
+/*
+ * Copyright © MagePal LLC. All rights reserved.
+ * See COPYING.txt for license details.
+ * https://www.magepal.com | support@magepal.com
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="magepal" translate="label" sortOrder="400" class="admin__page-magepal-tab">
+            <label>MagePal</label>
+        </tab>
+        <section id="magepal_core" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label><![CDATA[Notifications & Updates]]></label>
+            <tab>magepal</tab>
+            <resource>MagePal_Core::config</resource>
+            <group id="notification" type="text" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="0" translate="label">
+                <label>Search</label>
+                <attribute type="expanded">1</attribute>
+                <frontend_model>MagePal\Core\Block\Adminhtml\System\Config\Field\Search</frontend_model>
+            </group>
+            <group id="updates" type="text" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+                <label>Updates</label>
+                <attribute type="expanded">1</attribute>
+                <frontend_model>MagePal\Core\Block\Adminhtml\System\Config\Field\Extensions</frontend_model>
+            </group>
+        </section>
+    </system>
+</config>

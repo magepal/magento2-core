@@ -1,0 +1,61 @@
+<?php
+/**
+ * Copyright © MagePal LLC. All rights reserved.
+ * See COPYING.txt for license details.
+ * http://www.magepal.com | support@magepal.com
+ */
+
+/** @var $block MagePal\Core\Block\Adminhtml\System\Config\Field\Extensions */
+?>
+<div id="magepal-extension-list">
+
+    <?php if ($block->getUpdateCount()): ?>
+        <div class="entry-edit-head">
+            <?= __('Updated Extensions') ?>
+        </div>
+        <div class="cards">
+
+            <?php foreach ($block->getExtensionList() as $item): ?>
+                <?php if ($item['has_update']): ?>
+                    <div class="card">
+                        <div class="headerline">
+                            <?= $block->escapeHtml($item['name'] ?? '') ?>
+                        </div>
+                        <div class="wrapper">
+                            <div class="text-version">
+                                <span><?= $block->escapeHtml($item['install_version'] ?? '') ?></span>
+                                <span>&#8594;</span>
+                                <span><?= $block->escapeHtml($item['latest_version'] ?? '') ?></span>
+                            </div>
+                            <?php if (isset($item['url'])): ?>
+                            <div class="info">
+                                <a href="<?= $block->escapeUrl($item['url']) ?>">Learn More</a>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (count($block->getExtensionList()) > $block->getUpdateCount()): ?>
+        <div class="entry-edit-head">
+            <?= __('Up-to-Date Extensions') ?>
+        </div>
+        <div class="cards">
+            <?php foreach ($block->getExtensionList() as $item): ?>
+                <?php if (!$item['has_update']): ?>
+                    <div class="card">
+                        <div class="headerline"><?= $block->escapeHtml($item['name'] ?? '') ?></div>
+                        <div class="wrapper">
+                            <div class="text-version"><?= $block->escapeHtml($item['latest_version'] ?? '') ?></div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+</div>

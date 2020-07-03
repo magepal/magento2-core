@@ -1,0 +1,21 @@
+<?php
+/**
+ * Copyright © MagePal LLC. All rights reserved.
+ * See COPYING.txt for license details.
+ * http://www.magepal.com | support@magepal.com
+ */
+
+/** @var $block \MagePal\Core\Block\Adminhtml\Badge */
+?>
+<?php if ($block->isAuthorized()) : ?>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "magePalCoreNotificationIcon": {
+                "url":"<?= $block->escapeUrl($block->getNotificationUrl()) ?>",
+                "searchUrl":"<?= $block->escapeUrl($block->getSearchUrl()) ?>"
+            }
+        }
+    }
+</script>
+<?php endif; ?>
