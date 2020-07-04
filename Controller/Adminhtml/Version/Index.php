@@ -47,15 +47,15 @@ class Index extends Action
      */
     public function execute()
     {
-        $date = [
+        $data = [
             'success' => 1,
-            'count' => $this->module->getUpdateCount()
+            'count' => $this->module->getCachedUpdateCount()
         ];
 
         $result = $this->resultJsonFactory->create();
         $result->setHeader('Cache-Control', 'max-age=302400', true);
         $result->setHeader('Pragma', 'cache', true);
-        $result->setData($date);
+        $result->setData($data);
         return $result;
     }
 }

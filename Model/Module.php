@@ -9,6 +9,7 @@ namespace MagePal\Core\Model;
 
 use Exception;
 use InvalidArgumentException;
+use Magento\Backend\Model\Session;
 use Magento\Framework\App\Cache\Type\Config;
 use Magento\Framework\Component\ComponentRegistrar;
 use Magento\Framework\Component\ComponentRegistrarInterface;
@@ -20,7 +21,7 @@ class Module
 {
     const URL = "https://updates.magepal.com/extensions.json";
     const CACHE_KEY = 'magepal_extension_installed_list';
-    const DATA_VERSION = '1.0.1';
+    const DATA_VERSION = '1.0.2';
     const LIFE_TIME = 604800;
 
     /** @var int $updateCounter */
@@ -31,6 +32,7 @@ class Module
         'MagePal_Core'
     ];
 
+    /**  @var string */
     private $filterModule = 'MagePal_';
 
     private $composerJsonData = [];
@@ -59,6 +61,12 @@ class Module
      * @var Config
      */
     private $cache;
+    /**
+     * @var Session
+     */
+    private $session;
+
+    private $timeStamp;
 
     /**
      * @param ModuleListInterface $moduleList
@@ -66,25 +74,105 @@ class Module
      * @param ClientFactory $httpClientFactory
      * @param ReadFactory $readFactory
      * @param Config $cache
+     * @param Session $session
      */
     public function __construct(
         ModuleListInterface $moduleList,
         ComponentRegistrarInterface $componentRegistrar,
         ClientFactory $httpClientFactory,
         ReadFactory $readFactory,
-        Config $cache
+        Config $cache,
+        Session $session
     ) {
         $this->moduleList  = $moduleList;
         $this->componentRegistrar = $componentRegistrar;
         $this->readFactory = $readFactory;
         $this->httpClientFactory = $httpClientFactory;
         $this->cache = $cache;
+        $this->session = $session;
     }
 
+    /**
+     * @param string $needle
+     * @param array $haystack
+     * @param bool $defaultValue
+     * @return bool|mixed
+     */
+    public function getArrayKeyIfExist($needle, $haystack, $defaultValue = false)
+    {
+        return array_key_exists($needle, $haystack) ? $haystack[$needle] : $defaultValue;
+    }
+
+    /**
+     * @return int
+     */
     public function getUpdateCount()
     {
         $this->getOutDatedExtension();
         return $this->updateCounter;
+    }
+
+    /**
+     * @return int
+     */
+    protected function getTimeStamp()
+    {
+        if (empty($this->timeStamp)) {
+            $this->timeStamp = strtotime("now");
+        }
+
+        return $this->timeStamp;
+    }
+
+    /**
+     * @return  int
+     */
+    protected function getTtl()
+    {
+        return $this->getTimeStamp() + 60 * 60 * 24;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCachedUpdateCount()
+    {
+        $now = $this->getTimeStamp();
+        $hash = $this->getHash();
+        $data = (array) $this->session->getData('magepal-core-notification-data');
+
+        if (empty($data) || !is_array($data)
+            || $this->getArrayKeyIfExist('hash', $data, '') !== $hash
+            || $now > (int) $this->getArrayKeyIfExist('ttl', $data, 0)
+        ) {
+            $data = $this->setCountCache($this->getUpdateCount());
+        }
+
+        return (int) $data['count'] ?? 0;
+    }
+
+    /**
+     * @param $amount
+     * @return array
+     */
+    protected function setCountCache($amount)
+    {
+        $data = [
+            'count' => $amount,
+            'hash' => $this->getHash(),
+            'ttl'  => $this->getTtl()
+        ];
+
+        $this->session->setData('magepal-core-notification-data', $data);
+        return $data;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHash()
+    {
+        return md5(json_encode($this->getPostData()));
     }
 
     /**
@@ -93,22 +181,26 @@ class Module
     public function getOutDatedExtension()
     {
         if (empty($this->outDatedExtensionList)) {
-            if (!$data = $this->cache->load(self::CACHE_KEY)) {
-                $this->loadOutDatedExtension();
+            $data = $this->cache->load(self::CACHE_KEY);
+
+            try {
+                $dataObject = $data ? $this->decodeJson($data, true) : [];
+            } catch (Exception $e) {
+                $dataObject = [];
+            }
+
+            if (!$data
+                || $this->getArrayKeyIfExist('data_version', $dataObject, 0) != self::DATA_VERSION
+                || $this->getArrayKeyIfExist('hash', $dataObject, '')  !== $this->getHash()
+            ) {
+                $this->loadOutDatedExtensionCollection();
             } else {
-                $dataObject = $this->decodeJson($data, true);
+                if (array_key_exists('count', $dataObject)) {
+                    $this->updateCounter = $dataObject['count'];
+                }
 
-                if (!array_key_exists('data_version', $dataObject)
-                    || $dataObject['data_version'] != self::DATA_VERSION) {
-                    $this->loadOutDatedExtension();
-                } else {
-                    if (array_key_exists('count', $dataObject)) {
-                        $this->updateCounter = $dataObject['count'];
-                    }
-
-                    if (array_key_exists('extensions', $dataObject)) {
-                        $this->outDatedExtensionList = $dataObject['extensions'];
-                    }
+                if (array_key_exists('extensions', $dataObject)) {
+                    $this->outDatedExtensionList = $dataObject['extensions'];
                 }
             }
         }
@@ -116,12 +208,16 @@ class Module
         return $this->outDatedExtensionList;
     }
 
-    public function loadOutDatedExtension()
+    /**
+     * @return array
+     */
+    public function loadOutDatedExtensionCollection()
     {
         try {
             $extensionList = $this->getMyExtensionList();
             $feed =  $this->callApi(self::URL, $this->getPostData());
             $latestVersions = $feed['extensions'] ?? [];
+            $hasUpdate = false;
 
             foreach ($extensionList as $item) {
                 $item['latest_version'] = $item['install_version'];
@@ -138,16 +234,22 @@ class Module
 
                     if ($item['has_update']) {
                         $this->updateCounter += 1;
+                        $hasUpdate = true;
                     }
                 }
 
                 $this->outDatedExtensionList[] = $item;
             }
 
+            if ($hasUpdate) {
+                $this->setCountCache($this->updateCounter);
+            }
+
             $dataObject = [
                 'count' => $this->updateCounter,
                 'extensions' => $this->outDatedExtensionList,
-                'data_version' => self::DATA_VERSION
+                'data_version' => self::DATA_VERSION,
+                'hash' => $this->getHash()
             ];
 
             $this->cache->save(json_encode($dataObject), self::CACHE_KEY, [], self::LIFE_TIME);
@@ -158,6 +260,10 @@ class Module
         return $this->outDatedExtensionList;
     }
 
+    /**
+     * @param $moduleName
+     * @return string
+     */
     private function getTitleFromModuleName($moduleName)
     {
         $moduleName = str_replace($this->filterModule, '', $moduleName);

@@ -20,7 +20,8 @@ define([
         $.ajax({
             url: config.url,
             type: 'get',
-            dataType: 'json'
+            dataType: 'json',
+            error: function (){}
         }).done(function (response) {
             if (typeof response === 'object' && response.hasOwnProperty('count') && response.count > 0) {
                 var html = '<span class="notifications-counter">' + response.count + '</span>';

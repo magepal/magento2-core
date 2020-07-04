@@ -50,7 +50,9 @@
                     <div class="card">
                         <div class="headerline"><?= $block->escapeHtml($item['name'] ?? '') ?></div>
                         <div class="wrapper">
-                            <div class="text-version"><?= $block->escapeHtml($item['latest_version'] ?? '') ?></div>
+                            <div class="text-version">
+                                <?= $block->escapeHtml($item['latest_version'] ?? '') ?>
+                            </div>
                         </div>
                     </div>
                 <?php endif; ?>
