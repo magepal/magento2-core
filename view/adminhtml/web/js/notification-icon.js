@@ -16,7 +16,7 @@ define([
     var html = '<span class="mp-logo"></span>';
     $element.before(html);
 
-    return function (config) {
+    var showBadge = function (config) {
         $.ajax({
             url: config.url,
             type: 'get',
@@ -25,10 +25,19 @@ define([
         }).done(function (response) {
             if (typeof response === 'object' && response.hasOwnProperty('count') && response.count > 0) {
                 var html = '<span class="notifications-counter">' + response.count + '</span>';
-                $element.append(html);
+                if (config.notificationOption !== 1) {
+                    $element.append(html);
+                }
+
                 $element.parent().parent().find('ul.items li.item:first').append(html)
             }
         });
+    };
+
+    return function (config) {
+        if (config.notificationOption !== 0) {
+            showBadge(config);
+        }
 
         var openWindow = function ($element) {
             if ($($element).val().length > 2) {

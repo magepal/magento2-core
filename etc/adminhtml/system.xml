@@ -25,6 +25,14 @@
                 <attribute type="expanded">1</attribute>
                 <frontend_model>MagePal\Core\Block\Adminhtml\System\Config\Field\Extensions</frontend_model>
             </group>
+            <group id="general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label">
+                <label>Setting</label>
+                <field id="badge_notification" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Show Badge Notification</label>
+                    <source_model>MagePal\Core\Model\Config\Source\BadgeNotification</source_model>
+                    <comment><![CDATA[When Tab Open - Badge update count only shows when MagePal tab is expanded, in the "Notifications & Updates" section.]]></comment>
+                </field>
+            </group>
         </section>
     </system>
 </config>
