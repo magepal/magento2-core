@@ -1,5 +1,7 @@
 <a href="http://www.magepal.com" title="Magento Extensions" ><img src="https://image.ibb.co/dHBkYH/Magepal_logo.png" width="100" align="right" title="Magento Custom Modules" /></a>
 
+![magepal-core](https://user-images.githubusercontent.com/1415141/87557253-a9cdac80-c685-11ea-9f22-d2fa44b184a9.png)
+
 # MagePal Core Extension for:
 
 ---
