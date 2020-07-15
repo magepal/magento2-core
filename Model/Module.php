@@ -267,10 +267,13 @@ class Module
     private function getTitleFromModuleName($moduleName)
     {
         $moduleName = str_replace($this->filterModule, '', $moduleName);
-        return join(preg_split(
-            '/(?<=[a-z])(?=[A-Z])/x',
-            $moduleName
-        ), " ");
+        return implode(
+            ' ',
+            preg_split(
+                '/(?<=[a-z])(?=[A-Z])/x',
+                $moduleName
+            )
+        );
     }
 
     /**
