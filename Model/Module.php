@@ -21,7 +21,7 @@ class Module
 {
     const URL = "https://updates.magepal.com/extensions.json";
     const CACHE_KEY = 'magepal_extension_installed_list';
-    const DATA_VERSION = '1.0.2';
+    const DATA_VERSION = '1.0.1';
     const LIFE_TIME = 604800;
 
     /** @var int $updateCounter */
@@ -267,10 +267,13 @@ class Module
     private function getTitleFromModuleName($moduleName)
     {
         $moduleName = str_replace($this->filterModule, '', $moduleName);
-        return join(preg_split(
-            '/(?<=[a-z])(?=[A-Z])/x',
-            $moduleName
-        ), " ");
+        return implode(
+            ' ',
+            preg_split(
+                '/(?<=[a-z])(?=[A-Z])/x',
+                $moduleName
+            )
+        );
     }
 
     /**
