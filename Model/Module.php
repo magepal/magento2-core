@@ -21,7 +21,7 @@ class Module
 {
     const URL = "https://updates.magepal.com/extensions.json";
     const CACHE_KEY = 'magepal_extension_installed_list';
-    const DATA_VERSION = '1.0.2';
+    const DATA_VERSION = '1.0.1';
     const LIFE_TIME = 604800;
 
     /** @var int $updateCounter */
