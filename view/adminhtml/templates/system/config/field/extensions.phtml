@@ -14,7 +14,6 @@
             <?= __('Get the latest updates') ?>
         </div>
         <div class="cards">
-
             <?php foreach ($block->getExtensionList() as $item): ?>
                 <?php if ($item['has_update']): ?>
                     <div class="card">
@@ -22,7 +21,7 @@
                             <?= $block->escapeHtml($item['name'] ?? '') ?>
                         </div>
                         <div class="wrapper">
-                            <div class="text-version">
+                            <div class="text-version update">
                                 <span><?= $block->escapeHtml($item['install_version'] ?? '') ?></span>
                                 <span>&#8594;</span>
                                 <span><?= $block->escapeHtml($item['latest_version'] ?? '') ?></span>
