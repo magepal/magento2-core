@@ -15,7 +15,7 @@ use MagePal\Core\Model\Module;
 
 class Index extends Action
 {
-    public const ADMIN_RESOURCE = 'MagePal_Core::config';
+    const ADMIN_RESOURCE = 'MagePal_Core::config';
     /**
      * @var JsonFactory
      */
