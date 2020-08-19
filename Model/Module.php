@@ -21,7 +21,8 @@ class Module
 {
     const URL = "https://updates.magepal.com/extensions.json";
     const CACHE_KEY = 'magepal_extension_installed_list';
-    const DATA_VERSION = '1.0.2';
+    const SESSION_KEY = 'magepal-core-notification-data';
+    const DATA_VERSION = '1.0.3';
     const LIFE_TIME = 604800;
 
     /** @var int $updateCounter */
@@ -67,6 +68,10 @@ class Module
     private $session;
 
     private $timeStamp;
+    /**
+     * @var array|mixed
+     */
+    private $latestVersions = [];
 
     /**
      * @param ModuleListInterface $moduleList
@@ -139,7 +144,7 @@ class Module
     {
         $now = $this->getTimeStamp();
         $hash = $this->getHash();
-        $data = (array) $this->session->getData('magepal-core-notification-data');
+        $data = (array) $this->session->getData(self::SESSION_KEY);
 
         if (empty($data) || !is_array($data)
             || $this->getArrayKeyIfExist('hash', $data, '') !== $hash
@@ -163,7 +168,7 @@ class Module
             'ttl'  => $this->getTtl()
         ];
 
-        $this->session->setData('magepal-core-notification-data', $data);
+        $this->session->setData(self::SESSION_KEY, $data);
         return $data;
     }
 
@@ -173,6 +178,15 @@ class Module
     public function getHash()
     {
         return md5(json_encode($this->getPostData()));
+    }
+
+    public function getProductFeed()
+    {
+        if (empty($this->latestVersions)) {
+            $this->getOutDatedExtension();
+        }
+
+        return (array) $this->latestVersions;
     }
 
     /**
@@ -202,6 +216,10 @@ class Module
                 if (array_key_exists('extensions', $dataObject)) {
                     $this->outDatedExtensionList = $dataObject['extensions'];
                 }
+
+                if (array_key_exists('latestVersions', $dataObject)) {
+                    $this->latestVersions = $dataObject['latestVersions'];
+                }
             }
         }
 
@@ -216,7 +234,7 @@ class Module
         try {
             $extensionList = $this->getMyExtensionList();
             $feed =  $this->callApi(self::URL, $this->getPostData());
-            $latestVersions = $feed['extensions'] ?? [];
+            $this->latestVersions = $feed['extensions'] ?? [];
             $hasUpdate = false;
 
             foreach ($extensionList as $item) {
@@ -225,8 +243,8 @@ class Module
                 $item['url'] = 'https://www.magepal.com/extensions.com';
                 $item['name'] = $this->getTitleFromModuleName($item['moduleName']);
 
-                if (array_key_exists($item['composer_name'], $latestVersions)) {
-                    $latest = $latestVersions[$item['composer_name']];
+                if (array_key_exists($item['composer_name'], $this->latestVersions)) {
+                    $latest = $this->latestVersions[$item['composer_name']];
                     $item['latest_version'] = $latest['latest_version'];
                     $item['has_update'] = version_compare($item['latest_version'], $item['install_version']) > 0;
                     $item['url'] = $latest['url'];
@@ -249,7 +267,8 @@ class Module
                 'count' => $this->updateCounter,
                 'extensions' => $this->outDatedExtensionList,
                 'data_version' => self::DATA_VERSION,
-                'hash' => $this->getHash()
+                'hash' => $this->getHash(),
+                'latestVersions' => $this->latestVersions
             ];
 
             $this->cache->save(json_encode($dataObject), self::CACHE_KEY, [], self::LIFE_TIME);

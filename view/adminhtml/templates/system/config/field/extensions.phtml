@@ -28,7 +28,7 @@
                             </div>
                             <?php if (isset($item['url'])): ?>
                             <div class="info">
-                                <a href="<?= $block->escapeUrl($item['url']) ?>">Learn More</a>
+                                <a href="<?= $block->escapeUrl($item['url']) ?>" target="_blank">Learn More</a>
                             </div>
                             <?php endif; ?>
                         </div>
@@ -56,6 +56,24 @@
                     </div>
                 <?php endif; ?>
             <?php endforeach; ?>
+
+            <?php foreach ($block->getRelatedProduct() as $item): ?>
+                    <div class="card">
+                        <div class="headerline"><?= $block->escapeHtml($item['name'] ?? '') ?></div>
+                        <div class="wrapper">
+                            <div class="latest-version">
+                                <?= __('Not Installed') ?>
+                            </div>
+
+                            <?php if (isset($item['url'])): ?>
+                                <div class="info">
+                                    <a href="<?= $block->escapeUrl($item['url']) ?>" target="_blank">Get Now!</a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+            <?php endforeach; ?>
+
         </div>
     <?php endif; ?>
 

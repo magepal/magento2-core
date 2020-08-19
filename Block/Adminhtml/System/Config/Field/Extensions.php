@@ -56,4 +56,20 @@ class Extensions extends Field
     {
         return $this->module->getOutDatedExtension();
     }
+
+    /**
+     * @return array
+     */
+    public function getRelatedProduct()
+    {
+        $result = [];
+        $installedExtensions = $this->module->getMyExtensionList();
+        foreach ($this->module->getProductFeed() as $key => $item) {
+            if (isset($item['upsell']) && $item['upsell'] == 1 && !array_key_exists($key, $installedExtensions)) {
+                $result[$key] = $item;
+            }
+        }
+
+        return $result;
+    }
 }
