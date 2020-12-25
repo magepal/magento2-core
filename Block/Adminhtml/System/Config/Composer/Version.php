@@ -50,6 +50,9 @@ class Version extends Field
      */
     protected function _getElementHtml(AbstractElement $element)
     {
-        return 'v' . $this->module->getInstalledVersion($this->getModuleName());
+        $isElementIdModuleName = (strpos($element->getOriginalData('id'), 'MagePal_') === 0);
+        $moduleName = $isElementIdModuleName ? $element->getOriginalData('id') : $this->getModuleName();
+
+        return 'v' . $this->module->getInstalledVersion($moduleName);
     }
 }
