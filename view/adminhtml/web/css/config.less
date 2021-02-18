@@ -351,3 +351,52 @@
         z-index: 125;
     }
 }
+
+
+.section-config.active {
+    #magepal-info, #magepal-info-dl, #magepal-info-ee, .magepal-info{
+        padding-bottom: 5px;
+
+        a {
+            font-weight: bold;
+            border-left: 2px solid #e3e3e3;
+            padding-left:10px;
+            padding-right:10px;
+            color: #ef7e1e;
+
+            &:first-child {
+                padding-left: 5px;
+                border-left: none;
+            }
+        }
+    }
+
+    #upgrade-to-enhanced-ecommerce,
+    #upgrade-to-datalayer,
+    #upgrade-to-google-analytics4
+    {
+        padding-bottom: 7px;
+    }
+
+    #system_gmailsmtpapp-head,
+    #googletagmanager_about-head,
+    #googletagmanager_enhanced_ecommerce-head,
+    #googletagmanager_datalayer-head,
+    #enhanced_transactional_emails_general-head,
+    #magepal_checkout_preview_success_page-head
+    {
+        padding-bottom: 0;
+    }
+
+    a[id$="about_magepal-head"] {
+        padding-bottom: 0;
+    }
+
+    #row_googletagmanager_gdpr_note label span{
+        display:none;
+    }
+
+    .magepal-hr {
+        border-top: 1px solid #e3e3e3
+    }
+}
