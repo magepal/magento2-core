@@ -315,7 +315,7 @@ class Module
     {
         if (empty($this->myExtensionList)) {
             foreach ($this->moduleList->getNames() as $name) {
-                if (strpos($name, $this->filterModule) !== false && !in_array($name, $this->ignoreList)) {
+                if (strpos((string) $name, $this->filterModule) !== false && !in_array($name, $this->ignoreList)) {
                     $composerName = $this->getInstalledComposerName($name);
                     if ($composerName) {
                         $this->myExtensionList[$composerName] = [
