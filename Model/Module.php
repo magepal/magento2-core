@@ -22,7 +22,7 @@ class Module
     const URL = "https://updates.magepal.com/extensions.json";
     const CACHE_KEY = 'magepal_extension_installed_list';
     const SESSION_KEY = 'magepal-core-notification-data';
-    const DATA_VERSION = '1.0.3';
+    const DATA_VERSION = '1.0.4';
     const LIFE_TIME = 604800;
 
     /** @var int $updateCounter */
@@ -177,7 +177,7 @@ class Module
      */
     public function getHash()
     {
-        return md5(json_encode($this->getPostData()));
+        return sha1(json_encode($this->getPostData()));
     }
 
     public function getProductFeed()
