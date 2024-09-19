@@ -1,4 +1,4 @@
-<a href="http://www.magepal.com" title="Magento Extensions" ><img src="https://image.ibb.co/dHBkYH/Magepal_logo.png" width="100" align="right" title="Magento Custom Modules" /></a>
+<a href="https://www.magepal.com" title="Magento Extensions" ><img src="https://image.ibb.co/dHBkYH/Magepal_logo.png" width="100" align="right" title="Magento Custom Modules" /></a>
 
 # MagePal Core Extension:
 
