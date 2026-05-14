@@ -105,7 +105,7 @@ class Module
      */
     public function getArrayKeyIfExist($needle, $haystack, $defaultValue = false)
     {
-        return array_key_exists($needle, $haystack) ? $haystack[$needle] : $defaultValue;
+        return $needle !== null && array_key_exists($needle, $haystack) ? $haystack[$needle] : $defaultValue;
     }
 
     /**
@@ -243,7 +243,7 @@ class Module
                 $item['url'] = 'https://www.magepal.com/extensions.com';
                 $item['name'] = $this->getTitleFromModuleName($item['moduleName']);
 
-                if (array_key_exists($item['composer_name'], $this->latestVersions)) {
+                if ($item['composer_name'] !== null && array_key_exists($item['composer_name'], $this->latestVersions)) {
                     $latest = $this->latestVersions[$item['composer_name']];
                     $item['latest_version'] = $latest['latest_version'];
                     $item['has_update'] = version_compare($item['latest_version'], $item['install_version']) > 0;

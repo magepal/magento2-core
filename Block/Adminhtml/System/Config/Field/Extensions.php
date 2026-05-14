@@ -65,7 +65,9 @@ class Extensions extends Field
         $result = [];
         $installedExtensions = $this->module->getMyExtensionList();
         foreach ($this->module->getProductFeed() as $key => $item) {
-            if (isset($item['upsell']) && $item['upsell'] == 1 && !array_key_exists($key, $installedExtensions)) {
+            if (isset($item['upsell']) && $item['upsell'] == 1 &&
+                $key !== null && !array_key_exists($key, $installedExtensions)
+            ) {
                 $result[$key] = $item;
             }
         }
